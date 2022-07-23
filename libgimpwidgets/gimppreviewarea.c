@@ -437,8 +437,7 @@ gimp_preview_area_create_transform (GimpPreviewArea *area)
                                                          priv->config,
                                                          profile,
                                                          format,
-                                                         format,
-                                                         NULL);
+                                                         format);
     }
 }
 

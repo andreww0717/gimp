@@ -59,16 +59,8 @@ scripts = \
 
 test_scripts = \
 	contactsheet.scm		\
-	test-sphere.scm
-
-# scripts interpreted by gimp-script-fu-interpreter
-# Each installs to a subdir of /plug-ins
-# Each should have a shebang and execute permission
-independent_scripts = \
+	test-sphere.scm			\
 	ts-helloworld.scm
-
-ts_helloworlddir = $(gimpplugindir)/plug-ins/ts-helloworld
-ts_helloworld_SCRIPTS = ts-helloworld.scm
 
 
 scriptdata_DATA = $(scripts)
@@ -77,4 +69,4 @@ if GIMP_UNSTABLE
 scriptdata_DATA += $(test_scripts)
 endif
 
-EXTRA_DIST = $(scripts) $(test_scripts) $(independent_scripts)
+EXTRA_DIST = $(scripts) $(test_scripts)

@@ -177,7 +177,7 @@ png_create_procedure (GimpPlugIn  *plug_in,
                                            GIMP_PDB_PROC_TYPE_PLUGIN,
                                            png_load, NULL, NULL);
 
-      gimp_procedure_set_menu_label (procedure, _("PNG image"));
+      gimp_procedure_set_menu_label (procedure, N_("PNG image"));
 
       gimp_procedure_set_documentation (procedure,
                                         "Loads files in PNG file format",
@@ -207,7 +207,7 @@ png_create_procedure (GimpPlugIn  *plug_in,
 
       gimp_procedure_set_image_types (procedure, "*");
 
-      gimp_procedure_set_menu_label (procedure, _("PNG image"));
+      gimp_procedure_set_menu_label (procedure, N_("PNG image"));
 
       gimp_procedure_set_documentation (procedure,
                                         "Exports files in PNG file format",
@@ -2289,6 +2289,7 @@ save_dialog (GimpImage     *image,
                               NULL);
   gimp_procedure_dialog_get_int_combo (GIMP_PROCEDURE_DIALOG (dialog),
                                        "format", GIMP_INT_STORE (store));
+  g_object_unref (store);
 
   gimp_procedure_dialog_set_sensitive (GIMP_PROCEDURE_DIALOG (dialog),
                                        "save-transparent",

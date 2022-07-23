@@ -33,6 +33,7 @@ libappplugin_sources = [
   'gimppluginmanager-data.c',
   'gimppluginmanager-file.c',
   'gimppluginmanager-help-domain.c',
+  'gimppluginmanager-locale-domain.c',
   'gimppluginmanager-menu-branch.c',
   'gimppluginmanager-query.c',
   'gimppluginmanager-restore.c',

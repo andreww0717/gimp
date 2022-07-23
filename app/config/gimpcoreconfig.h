@@ -41,7 +41,6 @@ struct _GimpCoreConfig
   GimpGeglConfig          parent_instance;
 
   gchar                  *language;
-  gchar                  *prev_language;
   GimpInterpolationType   interpolation_type;
   gint                    default_threshold;
   gchar                  *plug_in_path;

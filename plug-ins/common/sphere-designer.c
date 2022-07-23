@@ -407,12 +407,12 @@ designer_create_procedure (GimpPlugIn  *plug_in,
       gimp_procedure_set_sensitivity_mask (procedure,
                                            GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
-      gimp_procedure_set_menu_label (procedure, _("Sphere _Designer..."));
+      gimp_procedure_set_menu_label (procedure, N_("Sphere _Designer..."));
       gimp_procedure_add_menu_path (procedure, "<Image>/Filters/Render");
 
       gimp_procedure_set_documentation (procedure,
-                                        _("Create an image of a textured "
-                                          "sphere"),
+                                        N_("Create an image of a textured "
+                                           "sphere"),
                                         "This plug-in can be used to create "
                                         "textured and/or bumpmapped spheres, "
                                         "and uses a small lightweight "
@@ -1526,11 +1526,11 @@ calcphong (common * obj, ray * r2, GimpVector4 * col)
 static int
 traceray (ray * r, GimpVector4 * col, gint level, gdouble imp)
 {
-  gint         i, b = -1;
-  gdouble      t = -1.0, min = 0.0;
-  common      *obj, *bobj = NULL;
-  gint         hits = 0;
-  GimpVector4  p = { 0, 0, 0, 0 };
+  gint     i, b = -1;
+  gdouble  t = -1.0, min = 0.0;
+  common  *obj, *bobj = NULL;
+  gint     hits = 0;
+  GimpVector4   p;
 
   if ((level == 0) || (imp < 0.005))
     {

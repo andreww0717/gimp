@@ -870,12 +870,11 @@ gimp_widget_get_color_transform (GtkWidget        *widget,
                                  GimpColorConfig  *config,
                                  GimpColorProfile *src_profile,
                                  const Babl       *src_format,
-                                 const Babl       *dest_format,
-                                 GimpColorProfile *softproof_profile)
+                                 const Babl       *dest_format)
 {
   static gboolean     initialized   = FALSE;
-  GimpColorProfile   *proof_profile = NULL;
   GimpColorProfile   *dest_profile  = NULL;
+  GimpColorProfile   *proof_profile = NULL;
   TransformCache     *cache;
 
   g_return_val_if_fail (widget == NULL || GTK_IS_WIDGET (widget), NULL);
@@ -897,11 +896,8 @@ gimp_widget_get_color_transform (GtkWidget        *widget,
       return NULL;
 
     case GIMP_COLOR_MANAGEMENT_SOFTPROOF:
-      if (! softproof_profile)
-        proof_profile = gimp_color_config_get_simulation_color_profile (config,
-                                                                        NULL);
-      else
-        proof_profile = g_object_ref (softproof_profile);
+      proof_profile = gimp_color_config_get_simulation_color_profile (config,
+                                                                      NULL);
       /*  fallthru  */
 
     case GIMP_COLOR_MANAGEMENT_DISPLAY:

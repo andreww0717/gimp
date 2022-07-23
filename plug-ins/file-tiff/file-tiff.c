@@ -156,7 +156,7 @@ tiff_create_procedure (GimpPlugIn  *plug_in,
                                            GIMP_PDB_PROC_TYPE_PLUGIN,
                                            tiff_load, NULL, NULL);
 
-      gimp_procedure_set_menu_label (procedure, _("TIFF or BigTIFF image"));
+      gimp_procedure_set_menu_label (procedure, N_("TIFF or BigTIFF image"));
 
       gimp_procedure_set_documentation (procedure,
                                         "Loads files of the TIFF and BigTIFF file formats",
@@ -185,7 +185,7 @@ tiff_create_procedure (GimpPlugIn  *plug_in,
 
       gimp_procedure_set_image_types (procedure, "*");
 
-      gimp_procedure_set_menu_label (procedure, _("TIFF or BigTIFF image"));
+      gimp_procedure_set_menu_label (procedure, N_("TIFF or BigTIFF image"));
 
       gimp_procedure_set_documentation (procedure,
                                         "Exports files in the TIFF or BigTIFF file formats",
@@ -229,12 +229,6 @@ tiff_create_procedure (GimpPlugIn  *plug_in,
                              TRUE,
                              G_PARAM_READWRITE);
 
-      GIMP_PROC_ARG_BOOLEAN (procedure, "cmyk",
-                             "Export as _CMYK",
-                             "Create a CMYK TIFF image using the soft-proofing color profile",
-                             FALSE,
-                             G_PARAM_READWRITE);
-
       GIMP_PROC_AUX_ARG_BOOLEAN (procedure, "save-layers",
                                  "Save La_yers",
                                  "Save Layers",
@@ -268,10 +262,10 @@ tiff_create_procedure (GimpPlugIn  *plug_in,
 
 static GimpValueArray *
 tiff_load (GimpProcedure        *procedure,
-           GimpRunMode           run_mode,
-           GFile                *file,
-           const GimpValueArray *args,
-           gpointer              run_data)
+          GimpRunMode           run_mode,
+          GFile                *file,
+          const GimpValueArray *args,
+          gpointer              run_data)
 {
   GimpValueArray    *return_vals;
   GimpPDBStatusType  status;

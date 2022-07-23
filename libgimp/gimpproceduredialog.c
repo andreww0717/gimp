@@ -562,11 +562,6 @@ gimp_procedure_dialog_new (GimpProcedure       *procedure,
  *         non-editable color area with a label.
  *     * %GIMP_TYPE_COLOR_BUTTON: a color button with no label.
  *     * %GIMP_TYPE_COLOR_AREA: a color area with no label.
- * - %G_TYPE_PARAM_FILE:
- *     * %GTK_FILE_CHOOSER_BUTTON (default): generic file chooser button
- *     in %GTK_FILE_CHOOSER_ACTION_OPEN mode. Please use
- *     gimp_procedure_dialog_get_file_chooser() to create buttons in
- *     other modes.
  *
  * If the @widget_type is not supported for the actual type of
  * @property, the function will fail. To keep the default, set to
@@ -611,11 +606,11 @@ gimp_procedure_dialog_get_widget (GimpProcedureDialog *dialog,
       if (widget_type == G_TYPE_NONE || widget_type == GTK_TYPE_CHECK_BUTTON)
         widget = gimp_prop_check_button_new (G_OBJECT (dialog->priv->config),
                                              property,
-                                             g_param_spec_get_nick (pspec));
+                                             _(g_param_spec_get_nick (pspec)));
       else if (widget_type == GTK_TYPE_SWITCH)
         widget = gimp_prop_switch_new (G_OBJECT (dialog->priv->config),
                                        property,
-                                       g_param_spec_get_nick (pspec),
+                                       _(g_param_spec_get_nick (pspec)),
                                        &label, NULL);
     }
   else if (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_INT ||
@@ -652,7 +647,7 @@ gimp_procedure_dialog_get_widget (GimpProcedureDialog *dialog,
         {
           widget = gimp_prop_scale_entry_new (G_OBJECT (dialog->priv->config),
                                               property,
-                                              g_param_spec_get_nick (pspec),
+                                              _(g_param_spec_get_nick (pspec)),
                                               1.0, FALSE, 0.0, 0.0);
         }
       else if (widget_type == GIMP_TYPE_SPIN_SCALE)
@@ -718,12 +713,6 @@ gimp_procedure_dialog_get_widget (GimpProcedureDialog *dialog,
           gtk_widget_set_vexpand (widget, FALSE);
           gtk_widget_set_hexpand (widget, FALSE);
         }
-    }
-  else if (G_IS_PARAM_SPEC_OBJECT (pspec) && pspec->value_type == G_TYPE_FILE)
-    {
-      widget = gimp_prop_file_chooser_button_new (G_OBJECT (dialog->priv->config),
-                                                  property, NULL,
-                                                  GTK_FILE_CHOOSER_ACTION_OPEN);
     }
   else
     {
@@ -866,7 +855,7 @@ gimp_procedure_dialog_get_color_widget (GimpProcedureDialog *dialog,
  * @property: name of the int property to build a combo for. It must be
  *            a property of the #GimpProcedure @dialog has been created
  *            for.
- * @store: (transfer full): the #GimpIntStore which will be used.
+ * @store:    the #GimpIntStore which will be used by the combo box.
  *
  * Creates a new #GimpLabelIntWidget for @property which must
  * necessarily be an integer or boolean property.
@@ -888,25 +877,20 @@ gimp_procedure_dialog_get_int_combo (GimpProcedureDialog *dialog,
   GtkWidget  *widget = NULL;
   GParamSpec *pspec;
 
-  g_return_val_if_fail (GIMP_IS_PROCEDURE_DIALOG (dialog), NULL);
   g_return_val_if_fail (property != NULL, NULL);
-  g_return_val_if_fail (GIMP_IS_INT_STORE (store), NULL);
 
   /* First check if it already exists. */
   widget = g_hash_table_lookup (dialog->priv->widgets, property);
 
   if (widget)
-    {
-      g_object_unref (store);
-      return widget;
-    }
+    return widget;
 
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (dialog->priv->config),
                                         property);
   if (! pspec)
     {
-      g_warning ("%s: parameter %s does not exist.", G_STRFUNC, property);
-      g_object_unref (store);
+      g_warning ("%s: parameter %s does not exist.",
+                 G_STRFUNC, property);
       return NULL;
     }
 
@@ -917,10 +901,9 @@ gimp_procedure_dialog_get_int_combo (GimpProcedureDialog *dialog,
                                             property, store);
       gtk_widget_set_vexpand (widget, FALSE);
       gtk_widget_set_hexpand (widget, TRUE);
-      widget = gimp_label_int_widget_new (g_param_spec_get_nick (pspec),
+      widget = gimp_label_int_widget_new (_(g_param_spec_get_nick (pspec)),
                                           widget);
     }
-  g_object_unref (store);
 
   if (! widget)
     {
@@ -939,82 +922,6 @@ gimp_procedure_dialog_get_int_combo (GimpProcedureDialog *dialog,
 
           gtk_size_group_add_widget (dialog->priv->label_group, label);
         }
-    }
-
-  gimp_procedure_dialog_check_mnemonic (dialog, widget, property, NULL);
-  g_hash_table_insert (dialog->priv->widgets, g_strdup (property), widget);
-  if (g_object_is_floating (widget))
-    g_object_ref_sink (widget);
-
-  return widget;
-}
-
-/**
- * gimp_procedure_dialog_get_int_radio:
- * @dialog:   the associated #GimpProcedureDialog.
- * @property: name of the int property to build radio buttons for. It
- *            must be a property of the #GimpProcedure @dialog has been
- *            created for.
- * @store: (transfer full): the #GimpIntStore which will be used.
- *
- * Creates a new #GimpLabelIntRadioFrame for @property which must
- * necessarily be an integer, enum or boolean property.
- * This must be used instead of gimp_procedure_dialog_get_widget() when
- * you want to create a group of %GtkRadioButton-s from an integer
- * property.
- *
- * If a widget has already been created for this procedure, it will be
- * returned instead (whatever its actual widget type).
- *
- * Returns: (transfer none): the #GtkWidget representing @property. The
- *                           object belongs to @dialog and must not be
- *                           freed.
- */
-GtkWidget *
-gimp_procedure_dialog_get_int_radio (GimpProcedureDialog *dialog,
-                                     const gchar         *property,
-                                     GimpIntStore        *store)
-{
-  GtkWidget  *widget = NULL;
-  GParamSpec *pspec;
-
-  g_return_val_if_fail (GIMP_IS_PROCEDURE_DIALOG (dialog), NULL);
-  g_return_val_if_fail (property != NULL, NULL);
-  g_return_val_if_fail (GIMP_IS_INT_STORE (store), NULL);
-
-  /* First check if it already exists. */
-  widget = g_hash_table_lookup (dialog->priv->widgets, property);
-
-  if (widget)
-    {
-      g_object_unref (store);
-      return widget;
-    }
-
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (dialog->priv->config),
-                                        property);
-  if (! pspec)
-    {
-      g_warning ("%s: parameter %s does not exist.", G_STRFUNC, property);
-      g_object_unref (store);
-      return NULL;
-    }
-
-  if (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_BOOLEAN ||
-      G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_INT)
-    {
-      widget = gimp_prop_int_radio_frame_new (G_OBJECT (dialog->priv->config),
-                                              property, NULL, store);
-      gtk_widget_set_vexpand (widget, FALSE);
-      gtk_widget_set_hexpand (widget, TRUE);
-    }
-  g_object_unref (store);
-
-  if (! widget)
-    {
-      g_warning ("%s: parameter '%s' of type %s not suitable as GimpIntRadioFrame",
-                 G_STRFUNC, property, G_PARAM_SPEC_TYPE_NAME (pspec));
-      return NULL;
     }
 
   gimp_procedure_dialog_check_mnemonic (dialog, widget, property, NULL);
@@ -1162,7 +1069,7 @@ gimp_procedure_dialog_get_scale_entry (GimpProcedureDialog *dialog,
 
   widget = gimp_prop_scale_entry_new (G_OBJECT (dialog->priv->config),
                                       property,
-                                      g_param_spec_get_nick (pspec),
+                                      _(g_param_spec_get_nick (pspec)),
                                       factor, FALSE, 0.0, 0.0);
 
   gtk_size_group_add_widget (dialog->priv->label_group,
@@ -1225,74 +1132,6 @@ gimp_procedure_dialog_get_label (GimpProcedureDialog *dialog,
     g_object_ref_sink (label);
 
   return label;
-}
-
-/**
- * gimp_procedure_dialog_get_file_chooser:
- * @dialog:   the associated #GimpProcedureDialog.
- * @property: name of the %GimpParamConfigPath or %GParamObject of value
- *            type %GFile property to build a #GtkFileChooserButton for.
- *            It must be a property of the #GimpProcedure @dialog has
- *            been created for.
- * @action:   The open mode for the widget.
- *
- * Creates a new %GtkFileChooserButton for @property which must
- * necessarily be a config path or %GFile property.
- * This can be used instead of gimp_procedure_dialog_get_widget() in
- * particular if you want to create a button in non-open modes (i.e. to
- * save files, and select or create folders).
- *
- * If a widget has already been created for this procedure, it will be
- * returned instead (whatever its actual widget type).
- *
- * Returns: (transfer none): the #GtkWidget representing @property. The
- *                           object belongs to @dialog and must not be
- *                           freed.
- */
-GtkWidget *
-gimp_procedure_dialog_get_file_chooser (GimpProcedureDialog  *dialog,
-                                        const gchar          *property,
-                                        GtkFileChooserAction  action)
-{
-  GtkWidget  *widget = NULL;
-  GParamSpec *pspec;
-
-  g_return_val_if_fail (GIMP_IS_PROCEDURE_DIALOG (dialog), NULL);
-  g_return_val_if_fail (property != NULL, NULL);
-
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (dialog->priv->config),
-                                        property);
-
-  if (! pspec)
-    {
-      g_warning ("%s: parameter %s does not exist.",
-                 G_STRFUNC, property);
-      return NULL;
-    }
-
-  g_return_val_if_fail (GIMP_IS_PARAM_SPEC_CONFIG_PATH (pspec) ||
-                        (G_IS_PARAM_SPEC_OBJECT (pspec) && pspec->value_type != G_TYPE_FILE),
-                        NULL);
-
-  /* First check if it already exists. */
-  widget = g_hash_table_lookup (dialog->priv->widgets, property);
-
-  if (widget)
-    return widget;
-
-  widget = gimp_prop_file_chooser_button_new (G_OBJECT (dialog->priv->config),
-                                              property, NULL, action);
-
-  /* TODO: make is a file chooser with label. */
-  /*gtk_size_group_add_widget (dialog->priv->label_group,
-                             gimp_labeled_get_label (GIMP_LABELED (widget)));
-
-  gimp_procedure_dialog_check_mnemonic (dialog, widget, property, NULL);*/
-  g_hash_table_insert (dialog->priv->widgets, g_strdup (property), widget);
-  if (g_object_is_floating (widget))
-    g_object_ref_sink (widget);
-
-  return widget;
 }
 
 /**

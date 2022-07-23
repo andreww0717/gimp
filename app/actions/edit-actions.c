@@ -70,10 +70,40 @@ static const GimpActionEntry edit_actions[] =
     "edit-undo", NC_("edit-action", "Undo History Menu"), NULL, NULL, NULL,
     GIMP_HELP_UNDO_DIALOG },
 
+  { "edit-bold", GIMP_ICON_EDIT_BOLD,
+    NC_("edit-action", "Bold"), "<primary>B",
+    NC_("edit-action", "Bold the selected text"),
+    edit_bold_cmd_callback,
+    GIMP_HELP_EDIT_BOLD },
+
+  { "edit-italic", GIMP_ICON_EDIT_ITALIC,
+    NC_("edit-action", "italic"), "<primary>J",
+    NC_("edit-action", "Italicize the selected text"),
+    edit_italic_cmd_callback,
+    GIMP_HELP_EDIT_ITALIC },
+
+  { "edit-underline", GIMP_ICON_EDIT_UNDERLINE,
+    NC_("edit-action", "Underline"), "<primary>U",
+    NC_("edit-action", "Underline the selected text"),
+    edit_underline_cmd_callback,
+    GIMP_HELP_EDIT_UNDERLINE },
+
+  { "edit-fontinc", GIMP_ICON_EDIT_FONT_INC,
+    NC_("edit-action", "FontInc"), "<primary>'",
+    NC_("edit-action", "Increase the font of the selected text"),
+    edit_fontInc_cmd_callback,
+    GIMP_HELP_EDIT_FONT_INC },
+
+  { "edit-fontdec", GIMP_ICON_EDIT_FONT_DEC,
+    NC_("edit-action", "FontDec"), "<primary>/",
+    NC_("edit-action", "Decrease the font of the selected text"),
+    edit_fontDec_cmd_callback,
+    GIMP_HELP_EDIT_FONT_DEC },
+
   { "edit-undo", GIMP_ICON_EDIT_UNDO,
     NC_("edit-action", "_Undo"), "<primary>Z",
     NC_("edit-action", "Undo the last operation"),
-    edit_undo_cmd_callback,
+    edit_bold_cmd_callback,
     GIMP_HELP_EDIT_UNDO },
 
   { "edit-redo", GIMP_ICON_EDIT_REDO,

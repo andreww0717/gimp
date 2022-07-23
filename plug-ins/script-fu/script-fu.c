@@ -23,19 +23,31 @@
 
 #include "script-fu-console.h"
 #include "script-fu-eval.h"
+#include "script-fu-server.h"
 #include "script-fu-text-console.h"
 
 #include "libscriptfu/script-fu-lib.h"
 #include "libscriptfu/script-fu-intl.h"
 
 
-#define SCRIPT_FU_TYPE (script_fu_get_type ())
-G_DECLARE_FINAL_TYPE (ScriptFu, script_fu, SCRIPT, FU, GimpPlugIn)
+typedef struct _ScriptFu      ScriptFu;
+typedef struct _ScriptFuClass ScriptFuClass;
 
 struct _ScriptFu
 {
   GimpPlugIn      parent_instance;
 };
+
+struct _ScriptFuClass
+{
+  GimpPlugInClass parent_class;
+};
+
+
+#define SCRIPT_FU_TYPE  (script_fu_get_type ())
+#define SCRIPT_FU (obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SCRIPT_FU_TYPE, ScriptFu))
+
+GType                   script_fu_get_type         (void) G_GNUC_CONST;
 
 static GList          * script_fu_query_procedures (GimpPlugIn           *plug_in);
 static GimpProcedure  * script_fu_create_procedure (GimpPlugIn           *plug_in,
@@ -51,6 +63,7 @@ static GimpValueArray * script_fu_batch_run        (GimpProcedure        *proced
                                                     gpointer              run_data);
 static void             script_fu_run_init         (GimpProcedure        *procedure,
                                                     GimpRunMode           run_mode);
+static GList *          script_fu_search_path      (void);
 static void             script_fu_extension_init   (GimpPlugIn           *plug_in);
 static GimpValueArray * script_fu_refresh_proc     (GimpProcedure        *procedure,
                                                     const GimpValueArray *args,
@@ -86,6 +99,7 @@ script_fu_query_procedures (GimpPlugIn *plug_in)
   list = g_list_append (list, g_strdup ("extension-script-fu"));
   list = g_list_append (list, g_strdup ("plug-in-script-fu-console"));
   list = g_list_append (list, g_strdup ("plug-in-script-fu-text-console"));
+  list = g_list_append (list, g_strdup ("plug-in-script-fu-server"));
   list = g_list_append (list, g_strdup ("plug-in-script-fu-eval"));
 
   return list;
@@ -119,13 +133,13 @@ script_fu_create_procedure (GimpPlugIn  *plug_in,
                                       GIMP_PDB_PROC_TYPE_PLUGIN,
                                       script_fu_run, NULL, NULL);
 
-      gimp_procedure_set_menu_label (procedure, _("Script-Fu _Console"));
+      gimp_procedure_set_menu_label (procedure, N_("Script-Fu _Console"));
       gimp_procedure_add_menu_path (procedure,
                                     "<Image>/Filters/Development/Script-Fu");
 
       gimp_procedure_set_documentation (procedure,
-                                        _("Interactive console for Script-Fu "
-                                          "development"),
+                                        N_("Interactive console for Script-Fu "
+                                           "development"),
                                         "Provides an interface which allows "
                                         "interactive scheme development.",
                                         name);
@@ -164,6 +178,59 @@ script_fu_create_procedure (GimpPlugIn  *plug_in,
                           GIMP_TYPE_RUN_MODE,
                           GIMP_RUN_INTERACTIVE,
                           G_PARAM_READWRITE);
+    }
+  else if (! strcmp (name, "plug-in-script-fu-server"))
+    {
+      procedure = gimp_procedure_new (plug_in, name,
+                                      GIMP_PDB_PROC_TYPE_PLUGIN,
+                                      script_fu_run, NULL, NULL);
+
+      gimp_procedure_set_menu_label (procedure, N_("_Start Server..."));
+      gimp_procedure_add_menu_path (procedure,
+                                    "<Image>/Filters/Development/Script-Fu");
+
+      gimp_procedure_set_documentation (procedure,
+                                        N_("Server for remote Script-Fu "
+                                           "operation"),
+                                        "Provides a server for remote "
+                                        "script-fu operation. NOTE that for "
+                                        "security reasons this procedure's "
+                                        "API was changed in an incompatible "
+                                        "way since GIMP 2.8.12. You now have "
+                                        "to pass the IP to listen on as "
+                                        "first parameter. Calling this "
+                                        "procedure with the old API will "
+                                        "fail on purpose.",
+                                        name);
+      gimp_procedure_set_attribution (procedure,
+                                      "Spencer Kimball & Peter Mattis",
+                                      "Spencer Kimball & Peter Mattis",
+                                      "1997");
+
+      GIMP_PROC_ARG_ENUM (procedure, "run-mode",
+                          "Run mode",
+                          "The run mode",
+                          GIMP_TYPE_RUN_MODE,
+                          GIMP_RUN_INTERACTIVE,
+                          G_PARAM_READWRITE);
+
+      GIMP_PROC_ARG_STRING (procedure, "ip",
+                            "IP",
+                            "The IP on which to listen for requests",
+                            NULL,
+                            G_PARAM_READWRITE);
+
+      GIMP_PROC_ARG_INT (procedure, "port",
+                         "Port",
+                         "The port on which to listen for requests",
+                         0, G_MAXINT, 0,
+                         G_PARAM_READWRITE);
+
+      GIMP_PROC_ARG_STRING (procedure, "logfile",
+                            "Log File",
+                            "The file to log activity to",
+                            NULL,
+                            G_PARAM_READWRITE);
     }
   else if (! strcmp (name, "plug-in-script-fu-eval"))
     {
@@ -227,6 +294,14 @@ script_fu_run (GimpProcedure        *procedure,
        */
 
       return_vals = script_fu_console_run (procedure, args);
+    }
+  else if (strcmp (name, "plug-in-script-fu-server") == 0)
+    {
+      /*
+       *  The script-fu server for remote operation
+       */
+
+      return_vals = script_fu_server_run (procedure, args);
     }
 
   if (! return_vals)
@@ -302,6 +377,32 @@ script_fu_run_init (GimpProcedure *procedure,
   g_list_free_full (path, (GDestroyNotify) g_object_unref);
 }
 
+static GList *
+script_fu_search_path (void)
+{
+  gchar *path_str;
+  GList *path  = NULL;
+
+  path_str = gimp_gimprc_query ("script-fu-path");
+
+  if (path_str)
+    {
+      GError *error = NULL;
+
+      path = gimp_config_path_expand_to_files (path_str, &error);
+      g_free (path_str);
+
+      if (! path)
+        {
+          g_warning ("Can't convert script-fu-path to filesystem encoding: %s",
+                     error->message);
+          g_clear_error (&error);
+        }
+    }
+
+  return path;
+}
+
 static void
 script_fu_extension_init (GimpPlugIn *plug_in)
 {
@@ -338,12 +439,12 @@ script_fu_extension_init (GimpPlugIn *plug_in)
                                   GIMP_PDB_PROC_TYPE_TEMPORARY,
                                   script_fu_refresh_proc, NULL, NULL);
 
-  gimp_procedure_set_menu_label (procedure, _("_Refresh Scripts"));
+  gimp_procedure_set_menu_label (procedure, N_("_Refresh Scripts"));
   gimp_procedure_add_menu_path (procedure,
                                 "<Image>/Filters/Development/Script-Fu");
 
   gimp_procedure_set_documentation (procedure,
-                                    _("Re-read all available Script-Fu scripts"),
+                                    N_("Re-read all available Script-Fu scripts"),
                                     "Re-read all available Script-Fu scripts",
                                     "script-fu-refresh");
   gimp_procedure_set_attribution (procedure,

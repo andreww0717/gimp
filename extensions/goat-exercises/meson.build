@@ -105,10 +105,19 @@ appdatafilein = configure_file(
   configuration: conf,
 )
 
-appdatafile = i18n.merge_file(
+appdatafile = custom_target(appdatafilename,
   input : [ appdatafilein, ],
-  output: appdatafilename,
-  po_dir: po_plug_ins_dir,
+  output: [ appdatafilename, ],
+  depend_files: [ po_plug_ins_dir ],
+  command: [
+    intltool_merge,
+    po_plug_ins_dir,
+    '@INPUT@',
+    '@OUTPUT@',
+    '--xml-style',
+    '--utf8',
+    '--cache=' + '@OUTDIR@' / 'intltool-merge-cache',
+  ],
   install: true,
   install_dir: gimpplugindir /  'extensions' / extension_name,
 )

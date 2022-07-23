@@ -1,4 +1,6 @@
 # Files from the Gimp distribution which have already been
 # marked to allow runtime translation of messages
 
-build/windows/installer/lang/setup.isl.xml.in
+[encoding: UTF-8]
+
+[type: gettext/ini] build/windows/installer/lang/setup.isl.ini

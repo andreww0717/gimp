@@ -950,6 +950,7 @@ save_dialog (GimpProcedure       *procedure,
   widget = gimp_procedure_dialog_get_int_combo (GIMP_PROCEDURE_DIALOG (dialog),
                                                "sub-sampling", GIMP_INT_STORE (store));
   widget = gimp_label_int_widget_get_widget (GIMP_LABEL_INT_WIDGET (widget));
+  g_object_unref (store);
 
   if (! gimp_drawable_is_rgb (drawable))
     {
@@ -963,7 +964,8 @@ save_dialog (GimpProcedure       *procedure,
                               _("Floating-Point"), 2,
                               NULL);
   gimp_procedure_dialog_get_int_combo (GIMP_PROCEDURE_DIALOG (dialog),
-                                       "dct", GIMP_INT_STORE (store));
+                                               "dct", GIMP_INT_STORE (store));
+  g_object_unref (store);
 
   gimp_procedure_dialog_get_label (GIMP_PROCEDURE_DIALOG (dialog),
                                    "advanced-title", _("Advanced Options"));

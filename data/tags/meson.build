@@ -1,8 +1,19 @@
-gimp_tags_default = i18n.merge_file(
-  input : 'gimp-tags-default.xml.in',
-  output: '@BASENAME@',
-  data_dirs: meson.current_source_dir(),
-  po_dir: potags_dir,
+
+xmlfilename = 'gimp-tags-default.xml'
+
+gimp_tags_default = custom_target(xmlfilename,
+  input : xmlfilename+'.in',
+  output: xmlfilename,
+
+  command: [
+    intltool_merge,
+    potags_dir,
+    '@INPUT@',
+    '@OUTPUT@',
+    '--xml-style',
+    '--utf8',
+    '--cache=' + '@OUTDIR@' / 'intltool-merge-cache',
+  ],
   install: true,
   install_dir: gimpdatadir / 'tags',
 )

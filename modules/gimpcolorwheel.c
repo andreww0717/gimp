@@ -1551,8 +1551,7 @@ gimp_color_wheel_create_transform (GimpColorWheel *wheel)
                                                          priv->config,
                                                          profile,
                                                          format,
-                                                         format,
-                                                         NULL);
+                                                         format);
     }
 }
 

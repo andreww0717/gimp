@@ -60,8 +60,7 @@ GimpColorTransform * gimp_widget_get_color_transform (GtkWidget         *widget,
                                                       GimpColorConfig   *config,
                                                       GimpColorProfile  *src_profile,
                                                       const Babl        *src_format,
-                                                      const Babl        *dest_format,
-                                                      GimpColorProfile  *softproof_profile);
+                                                      const Babl        *dest_format);
 
 
 G_END_DECLS

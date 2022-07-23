@@ -268,8 +268,7 @@ colorsel_water_create_transform (ColorselWater *water)
                                                           water->config,
                                                           profile,
                                                           format,
-                                                          format,
-                                                          NULL);
+                                                          format);
     }
 }
 

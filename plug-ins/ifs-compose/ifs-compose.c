@@ -369,13 +369,13 @@ ifs_create_procedure (GimpPlugIn  *plug_in,
       gimp_procedure_set_sensitivity_mask (procedure,
                                            GIMP_PROCEDURE_SENSITIVE_DRAWABLE);
 
-      gimp_procedure_set_menu_label (procedure, _("_IFS Fractal..."));
+      gimp_procedure_set_menu_label (procedure, N_("_IFS Fractal..."));
       gimp_procedure_add_menu_path (procedure,
                                     "<Image>/Filters/Render/Fractals");
 
       gimp_procedure_set_documentation
         (procedure,
-         _("Create an Iterated Function System (IFS) fractal"),
+         N_("Create an Iterated Function System (IFS) fractal"),
          "Interactively create an Iterated Function System "
          "fractal. Use the window on the upper left to adjust"
          "the component transformations of the fractal. The "
@@ -1077,6 +1077,26 @@ design_op_menu_create (GtkWidget *window)
     { "delete", GIMP_ICON_EDIT_DELETE,
       N_("_Delete"), "<primary>D", NULL,
       G_CALLBACK (ifs_compose_delete_callback) },
+
+      { "bold", GIMP_ICON_EDIT_BOLD,
+      N_("bold"), "<primary>B", NULL,
+      G_CALLBACK (undo) },
+
+      { "italic", GIMP_ICON_EDIT_ITALIC,
+      N_("italic"), "<primary>J", NULL,
+      G_CALLBACK (undo) },
+
+      { "underline", GIMP_ICON_EDIT_UNDERLINE,
+      N_("underline"), "<primary>U", NULL,
+      G_CALLBACK (undo) },
+
+      { "fontInc", GIMP_ICON_EDIT_FONTINC,
+      N_("fontInc"), "<primary>'", NULL,
+      G_CALLBACK (undo) },
+
+      { "fontDec", GIMP_ICON_EDIT_fONTDEC,
+      N_("fontDec"), "<primary>/", NULL,
+      G_CALLBACK (undo) },
 
     { "undo", GIMP_ICON_EDIT_UNDO,
       N_("_Undo"), "<primary>Z", NULL,
@@ -1933,6 +1953,35 @@ undo_exchange (gint el)
   ifs_compose_preview ();
 }
 
+static void
+bold (void)
+{
+  
+}
+
+static void
+italic (void)
+{
+  
+}
+
+static void
+underline (void)
+{
+  
+}
+
+static void
+fontInc (void)
+{
+  
+}
+
+static void
+fontDec (void)
+{
+  
+}
 static void
 undo (void)
 {

@@ -87,11 +87,6 @@ sub generate_fun {
         $wrapped = '_';
     }
 
-    $skip_gi = '';
-    if ($proc->{skip_gi}) {
-        $skip_gi = ' (skip)';
-    }
-
     if ($proc->{deprecated}) {
         if ($proc->{deprecated} eq 'NONE') {
             push @{$out->{protos}}, "GIMP_DEPRECATED\n";
@@ -519,7 +514,7 @@ CODE
     return <<CODE;
 
 /**
- * $wrapped$funcname:$func_annotations$skip_gi
+ * $wrapped$funcname:$func_annotations
 $argdesc *
 $procdesc
  *

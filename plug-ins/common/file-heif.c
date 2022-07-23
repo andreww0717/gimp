@@ -184,7 +184,7 @@ heif_create_procedure (GimpPlugIn  *plug_in,
                                            GIMP_PDB_PROC_TYPE_PLUGIN,
                                            heif_load, NULL, NULL);
 
-      gimp_procedure_set_menu_label (procedure, _("HEIF/HEIC"));
+      gimp_procedure_set_menu_label (procedure, N_("HEIF/HEIC"));
 
       gimp_procedure_set_documentation (procedure,
                                         _("Loads HEIF images"),
@@ -224,7 +224,7 @@ heif_create_procedure (GimpPlugIn  *plug_in,
 
       gimp_procedure_set_image_types (procedure, "RGB*");
 
-      gimp_procedure_set_menu_label (procedure, _("HEIF/HEIC"));
+      gimp_procedure_set_menu_label (procedure, N_("HEIF/HEIC"));
 
       gimp_procedure_set_documentation (procedure,
                                         _("Exports HEIF images"),
@@ -1344,12 +1344,6 @@ load_image (GFile              *file,
               }
           }
 
-        gexiv2_metadata_try_set_orientation (GEXIV2_METADATA (metadata),
-                                             GEXIV2_ORIENTATION_NORMAL, NULL);
-        gexiv2_metadata_try_set_metadata_pixel_width (GEXIV2_METADATA (metadata),
-                                                      width, NULL);
-        gexiv2_metadata_try_set_metadata_pixel_height (GEXIV2_METADATA (metadata),
-                                                       height, NULL);
         gimp_image_metadata_load_finish (image, "image/heif",
                                          metadata, flags);
       }

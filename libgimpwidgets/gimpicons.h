@@ -209,6 +209,11 @@ G_BEGIN_DECLS
 #define GIMP_ICON_EDIT_PASTE_INTO           "gimp-paste-into"
 #define GIMP_ICON_EDIT_REDO                 "edit-redo"
 #define GIMP_ICON_EDIT_UNDO                 "edit-undo"
+#define GIMP_ICON_EDIT_BOLD                 "edit-bold"
+#define GIMP_ICON_EDIT_ITALIC               "gimp-edit-italic"
+#define GIMP_ICON_EDIT_UNDERLINE            "gimp-edit-underline"
+#define GIMP_ICON_EDIT_FONT_INC             "gimp-edit-font-inc"
+#define GIMP_ICON_EDIT_FONT_DEC             "gimp-edit-font-dec"
 
 #define GIMP_ICON_FILL_HORIZONTAL           "gimp-hfill"
 #define GIMP_ICON_FILL_VERTICAL             "gimp-vfill"

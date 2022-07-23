@@ -1,8 +1,19 @@
-gimp_tips = i18n.merge_file(
-  input : 'gimp-tips.xml.in',
-  output: '@BASENAME@',
-  data_dirs: meson.current_source_dir(),
-  po_dir: potips_dir,
+
+xmlfilename = 'gimp-tips.xml'
+
+gimp_tips = custom_target(xmlfilename,
+  input : xmlfilename+'.in',
+  output: xmlfilename,
+
+  command: [
+    intltool_merge,
+    potips_dir,
+    '@INPUT@',
+    '@OUTPUT@',
+    '--xml-style',
+    '--utf8',
+    '--cache=' + '@OUTDIR@' / 'intltool-merge-cache',
+  ],
   install: true,
   install_dir: gimpdatadir / 'tips',
 )
@@ -27,7 +38,7 @@ if xmllint.found()
       '--output', '@OUTPUT@',
       '--path', meson.current_source_dir(),
       '--valid', gimp_tips,
-  ],
+    ],
     output: [ 'validate-tips-output.xml' ],
     build_by_default: true,
     install: false

@@ -46,6 +46,11 @@
 #define GIMP_HELP_FILE_CREATE_TEMPLATE            "gimp-file-save-as-template" /* Update string along with gimp-help-2 */
 #define GIMP_HELP_FILE_QUIT                       "gimp-file-quit"
 
+#define GIMP_HELP_EDIT_BOLD                       "gimp-edit-bold"
+#define GIMP_HELP_EDIT_ITALIC                     "gimp-edit-italic"
+#define GIMP_HELP_EDIT_UNDERLINE                  "gimp-edit-underline"
+#define GIMP_HELP_EDIT_FONT_INC                   "gimp-edit-font-inc"
+#define GIMP_HELP_EDIT_FONT_DEC                   "gimp-edit-font-dec"
 #define GIMP_HELP_EDIT_UNDO                       "gimp-edit-undo"
 #define GIMP_HELP_EDIT_REDO                       "gimp-edit-redo"
 #define GIMP_HELP_EDIT_STRONG_UNDO                "gimp-edit-strong-undo"

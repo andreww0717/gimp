@@ -60,7 +60,6 @@
 #include <libgimpwidgets/gimphintbox.h>
 #include <libgimpwidgets/gimpicons.h>
 #include <libgimpwidgets/gimpintcombobox.h>
-#include <libgimpwidgets/gimpintradioframe.h>
 #include <libgimpwidgets/gimpintstore.h>
 #include <libgimpwidgets/gimplabelcolor.h>
 #include <libgimpwidgets/gimplabeled.h>

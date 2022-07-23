@@ -1,9 +1,9 @@
 # Files from the Gimp distribution which have already been
 # marked to allow runtime translation of messages
 
+[encoding: UTF-8]
+
 extensions/goat-exercises/goat-exercise-c.c
-extensions/goat-exercises/goat-exercise-gjs.js
-extensions/goat-exercises/goat-exercise-lua.lua
 extensions/goat-exercises/goat-exercise-py3.py
 extensions/goat-exercises/goat-exercise-vala.vala
 extensions/goat-exercises/org.gimp.extension.goat-exercises.metainfo.xml.in.in
@@ -56,7 +56,6 @@ plug-ins/common/file-raw-data.c
 plug-ins/common/file-sunras.c
 plug-ins/common/file-svg.c
 plug-ins/common/file-tga.c
-plug-ins/common/file-wbmp.c
 plug-ins/common/file-wmf.c
 plug-ins/common/file-xbm.c
 plug-ins/common/file-xmc.c
@@ -149,8 +148,8 @@ plug-ins/gimpressionist/repaint.c
 plug-ins/gimpressionist/size.c
 plug-ins/gimpressionist/sizemap.c
 plug-ins/gimpressionist/utils.c
-plug-ins/ui/plug-in-metadata-editor.ui
-plug-ins/ui/plug-in-metadata-viewer.ui
+[type: gettext/glade]plug-ins/ui/plug-in-metadata-editor.ui
+[type: gettext/glade]plug-ins/ui/plug-in-metadata-viewer.ui
 plug-ins/gradient-flare/gradient-flare.c
 plug-ins/help-browser/dialog.c
 plug-ins/help-browser/help-browser.c

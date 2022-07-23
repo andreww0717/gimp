@@ -59,7 +59,6 @@ common_plugins_list = [
     'deps': [ gtk3, gegl, rsvg, ],
   },
   { 'name': 'file-tga', },
-  { 'name': 'file-wbmp', },
   { 'name': 'file-xbm', },
   { 'name': 'file-xwd', },
   { 'name': 'film', },

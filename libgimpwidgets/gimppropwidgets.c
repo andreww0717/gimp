@@ -991,12 +991,12 @@ gimp_prop_int_radio_frame_new (GObject      *config,
                                const gchar  *title,
                                GimpIntStore *store)
 {
-  GParamSpec  *param_spec;
-  const gchar *tooltip;
-  GtkWidget   *frame;
+  GParamSpec *param_spec;
+  GtkWidget  *frame;
+  GtkWidget  *box;
 
   g_return_val_if_fail (G_IS_OBJECT (config), NULL);
-  g_return_val_if_fail (property_name != NULL, NULL);
+  g_return_val_if_fail (G_IS_OBJECT (config), NULL);
   g_return_val_if_fail (GIMP_IS_INT_STORE (store), NULL);
 
   param_spec = check_param_spec_w (config, property_name,
@@ -1007,18 +1007,107 @@ gimp_prop_int_radio_frame_new (GObject      *config,
   if (! title)
     title = g_param_spec_get_nick (param_spec);
 
-  tooltip = g_param_spec_get_blurb (param_spec);
+  frame = gimp_frame_new (title);
 
-  frame = gimp_int_radio_frame_new_from_store (title, store);
-  g_object_bind_property (config, property_name,
-                          frame, "value",
-                          G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
-  gimp_help_set_help_data (frame, tooltip, NULL);
-  gtk_widget_show (frame);
+  box = gimp_prop_int_radio_box_new (config, property_name, store);
+  gtk_container_add (GTK_CONTAINER (frame), box);
+  gtk_widget_show (box);
 
   gimp_widget_set_bound_property (frame, config, property_name);
 
+  gtk_widget_show (frame);
+
   return frame;
+}
+
+/**
+ * gimp_prop_int_radio_box_new:
+ * @config:        Object to which property is attached.
+ * @property_name: Name of enum property controlled by the radio buttons.
+ * @store:         #GimpIntStore holding list of labels, values, etc.
+ *
+ * Creates a group of radio buttons which function to set and display
+ * the specified int property. If you want to assign a label to the
+ * group of radio buttons, use gimp_prop_int_radio_frame_new()
+ * instead of this function.
+ *
+ * Returns: (transfer full): A #GtkBox containing the radio buttons.
+ *
+ * Since: 3.0
+ */
+GtkWidget *
+gimp_prop_int_radio_box_new (GObject      *config,
+                             const gchar  *property_name,
+                             GimpIntStore *store)
+{
+  GParamSpec   *param_spec;
+  GtkWidget    *vbox;
+  GtkWidget    *button = NULL;
+  GtkTreeModel *model;
+  GtkTreeIter   iter;
+  gboolean      iter_valid;
+  GSList       *group = NULL;
+  gint          value;
+
+  g_return_val_if_fail (G_IS_OBJECT (config), NULL);
+  g_return_val_if_fail (property_name != NULL, NULL);
+  g_return_val_if_fail (GIMP_IS_INT_STORE (store), NULL);
+
+  param_spec = check_param_spec_w (config, property_name,
+                                   G_TYPE_PARAM_INT, G_STRFUNC);
+  if (! param_spec)
+    return NULL;
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+
+  model = GTK_TREE_MODEL (store);
+
+  for (iter_valid = gtk_tree_model_get_iter_first (model, &iter);
+       iter_valid;
+       iter_valid = gtk_tree_model_iter_next (model, &iter))
+    {
+      gchar *label;
+
+      gtk_tree_model_get (model, &iter,
+                          GIMP_INT_STORE_LABEL, &label,
+                          GIMP_INT_STORE_VALUE, &value,
+                          -1);
+
+      button = gtk_radio_button_new_with_mnemonic (group, label);
+      gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      g_free (label);
+
+      group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (button));
+
+      g_object_set_data (G_OBJECT (button), "gimp-item-data",
+                         GINT_TO_POINTER (value));
+
+      g_signal_connect (button, "toggled",
+                        G_CALLBACK (gimp_prop_radio_button_callback),
+                        config);
+    }
+
+  g_object_get (config,
+                property_name, &value,
+                NULL);
+
+  gimp_int_radio_group_set_active (GTK_RADIO_BUTTON (button), value);
+
+  set_radio_spec (G_OBJECT (button), param_spec);
+
+  connect_notify (config, property_name,
+                  G_CALLBACK (gimp_prop_radio_button_notify),
+                  button);
+
+  g_object_set_data (G_OBJECT (vbox), "radio-button", button);
+
+  gimp_widget_set_bound_property (vbox, config, property_name);
+
+  gtk_widget_show (vbox);
+
+  return vbox;
 }
 
 
@@ -2639,12 +2728,10 @@ static void        gimp_prop_file_chooser_button_notify   (GObject        *confi
  * gimp_prop_file_chooser_button_new:
  * @config:        object to which property is attached.
  * @property_name: name of path property.
- * @title: (nullable): the title of the browse dialog.
+ * @title:         the title of the browse dialog.
  * @action:        the open mode for the widget.
  *
  * Creates a #GtkFileChooserButton to edit the specified path property.
- * @property_name must represent either a GIMP_PARAM_SPEC_CONFIG_PATH or
- * a G_PARAM_SPEC_OBJECT where `value_type == G_TYPE_FILE`.
  *
  * Note that #GtkFileChooserButton implements the #GtkFileChooser
  * interface; you can use the #GtkFileChooser API with it.
@@ -2665,27 +2752,10 @@ gimp_prop_file_chooser_button_new (GObject              *config,
   g_return_val_if_fail (G_IS_OBJECT (config), NULL);
   g_return_val_if_fail (property_name != NULL, NULL);
 
-  param_spec = find_param_spec (config, property_name, G_STRFUNC);
+  param_spec = check_param_spec_w (config, property_name,
+                                   GIMP_TYPE_PARAM_CONFIG_PATH, G_STRFUNC);
   if (! param_spec)
-    {
-      g_warning ("%s: %s has no property named '%s'",
-                 G_STRFUNC, g_type_name (G_TYPE_FROM_INSTANCE (config)),
-                 property_name);
-      return NULL;
-    }
-
-  if (! GIMP_IS_PARAM_SPEC_CONFIG_PATH (param_spec) &&
-      (! G_IS_PARAM_SPEC_OBJECT (param_spec) || param_spec->value_type != G_TYPE_FILE))
-    {
-      g_warning ("%s: property '%s' of %s is neither a GIMP_PARAM_SPEC_CONFIG_PATH "
-                 "nor a G_PARAM_SPEC_OBJECT of value type G_TYPE_FILE.",
-                 G_STRFUNC, param_spec->name,
-                 g_type_name (param_spec->owner_type));
-      return NULL;
-    }
-
-  if (! title)
-    title = g_param_spec_get_nick (param_spec);
+    return NULL;
 
   button = gtk_file_chooser_button_new (title, action);
 
@@ -2738,27 +2808,17 @@ gimp_prop_file_chooser_button_setup (GtkWidget  *button,
                                      GObject    *config,
                                      GParamSpec *param_spec)
 {
+  gchar *value;
   GFile *file = NULL;
 
-  if (GIMP_IS_PARAM_SPEC_CONFIG_PATH (param_spec))
-    {
-      gchar *value;
+  g_object_get (config,
+                param_spec->name, &value,
+                NULL);
 
-      g_object_get (config,
-                    param_spec->name, &value,
-                    NULL);
-
-      if (value)
-        {
-          file = gimp_file_new_for_config_path (value, NULL);
-          g_free (value);
-        }
-    }
-  else /* G_FILE */
+  if (value)
     {
-      g_object_get (config,
-                    param_spec->name, &file,
-                    NULL);
+      file = gimp_file_new_for_config_path (value, NULL);
+      g_free (value);
     }
 
   if (file)
@@ -2795,6 +2855,8 @@ gimp_prop_file_chooser_button_callback (GtkFileChooser *button,
 {
   GParamSpec *param_spec;
   GFile      *file;
+  gchar      *value = NULL;
+  gchar      *v;
 
   param_spec = get_param_spec (G_OBJECT (button));
   if (! param_spec)
@@ -2802,56 +2864,29 @@ gimp_prop_file_chooser_button_callback (GtkFileChooser *button,
 
   file = gtk_file_chooser_get_file (button);
 
-  if (GIMP_IS_PARAM_SPEC_CONFIG_PATH (param_spec))
+  if (file)
     {
-      gchar *value = NULL;
-      gchar *v;
-
-      if (file)
-        {
-          value = gimp_file_get_config_path (file, NULL);
-          g_object_unref (file);
-        }
-
-      g_object_get (config, param_spec->name, &v, NULL);
-
-      if (g_strcmp0 (v, value))
-        {
-          g_signal_handlers_block_by_func (config,
-                                           gimp_prop_file_chooser_button_notify,
-                                           button);
-
-          g_object_set (config, param_spec->name, value, NULL);
-
-          g_signal_handlers_unblock_by_func (config,
-                                             gimp_prop_file_chooser_button_notify,
-                                             button);
-        }
-
-      g_free (value);
-      g_free (v);
+      value = gimp_file_get_config_path (file, NULL);
+      g_object_unref (file);
     }
-  else /* G_FILE */
+
+  g_object_get (config, param_spec->name, &v, NULL);
+
+  if (g_strcmp0 (v, value))
     {
-      GFile *f = NULL;
+      g_signal_handlers_block_by_func (config,
+                                       gimp_prop_file_chooser_button_notify,
+                                       button);
 
-      g_object_get (config, param_spec->name, &f, NULL);
+      g_object_set (config, param_spec->name, value, NULL);
 
-      if (! f || ! file || ! g_file_equal (f, file))
-        {
-          g_signal_handlers_block_by_func (config,
-                                           gimp_prop_file_chooser_button_notify,
-                                           button);
-
-          g_object_set (config, param_spec->name, file, NULL);
-
-          g_signal_handlers_unblock_by_func (config,
-                                             gimp_prop_file_chooser_button_notify,
-                                             button);
-        }
-      g_clear_object (&f);
+      g_signal_handlers_unblock_by_func (config,
+                                         gimp_prop_file_chooser_button_notify,
+                                         button);
     }
-  g_clear_object (&file);
+
+  g_free (value);
+  g_free (v);
 }
 
 static void

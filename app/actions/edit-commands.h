@@ -18,7 +18,21 @@
 #ifndef __EDIT_COMMANDS_H__
 #define __EDIT_COMMANDS_H__
 
-
+void   edit_bold_cmd_callback               (GimpAction *action,
+                                             GVariant   *value,
+                                             gpointer    data);
+ void   edit_italic_cmd_callback               (GimpAction *action,
+                                             GVariant   *value,
+                                             gpointer    data);
+ void   edit_underline_cmd_callback               (GimpAction *action,
+                                             GVariant   *value,
+                                             gpointer    data);
+void   edit_fontInc_cmd_callback               (GimpAction *action,
+                                             GVariant   *value,
+                                             gpointer    data);
+void   edit_fontDec_cmd_callback               (GimpAction *action,
+                                             GVariant   *value,
+                                             gpointer    data);
 void   edit_undo_cmd_callback               (GimpAction *action,
                                              GVariant   *value,
                                              gpointer    data);

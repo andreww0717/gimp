@@ -116,7 +116,7 @@ jpegxl_create_procedure (GimpPlugIn  *plug_in,
                                            GIMP_PDB_PROC_TYPE_PLUGIN,
                                            jpegxl_load, NULL, NULL);
 
-      gimp_procedure_set_menu_label (procedure, _("JPEG XL image"));
+      gimp_procedure_set_menu_label (procedure, N_("JPEG XL image"));
 
       gimp_procedure_set_documentation (procedure,
                                         _("Loads files in the JPEG XL file format"),
@@ -143,7 +143,7 @@ jpegxl_create_procedure (GimpPlugIn  *plug_in,
 
       gimp_procedure_set_image_types (procedure, "RGB*, GRAY*");
 
-      gimp_procedure_set_menu_label (procedure, _("JPEG XL image"));
+      gimp_procedure_set_menu_label (procedure, N_("JPEG XL image"));
 
       gimp_procedure_set_documentation (procedure,
                                         _("Saves files in the JPEG XL file format"),
@@ -1118,6 +1118,7 @@ save_dialog (GimpImage     *image,
 
   gimp_procedure_dialog_get_int_combo (GIMP_PROCEDURE_DIALOG (dialog),
                                        "speed", GIMP_INT_STORE (store));
+  g_object_unref (store);
 
   store = gimp_int_store_new (_("8 bit/channel"),   8,
                               _("16 bit/channel"), 16,
@@ -1125,6 +1126,7 @@ save_dialog (GimpImage     *image,
 
   gimp_procedure_dialog_get_int_combo (GIMP_PROCEDURE_DIALOG (dialog),
                                        "save-bit-depth", GIMP_INT_STORE (store));
+  g_object_unref (store);
 
   orig_profile_check = gimp_procedure_dialog_get_widget (GIMP_PROCEDURE_DIALOG (dialog),
                                                          "uses-original-profile",

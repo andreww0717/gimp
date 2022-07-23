@@ -83,6 +83,87 @@ static void       copy_named_visible_buffer_callback (GtkWidget     *widget,
 /*  public functions  */
 
 void
+edit_bold_cmd_callback (GimpAction *action,
+                        GVariant   *value,
+                        gpointer    data)
+{
+  GimpImage   *image;
+  GimpDisplay *display;
+  return_if_no_image (image, data);
+  return_if_no_display (display, data);
+
+  if (tool_manager_undo_active (image->gimp, display) ||
+      gimp_image_undo (image))
+    {
+      gimp_image_flush (image);
+    }
+}
+
+edit_italic_cmd_callback (GimpAction *action,
+                         GVariant   *value,
+                         gpointer    data)
+{
+  GimpImage   *image;
+  GimpDisplay *display;
+  return_if_no_image (image, data);
+  return_if_no_display (display, data);
+
+  if (tool_manager_undo_active (image->gimp, display) ||
+      gimp_image_undo (image))
+    {
+      gimp_image_flush (image);
+    }
+}
+
+edit_underline_cmd_callback (GimpAction *action,
+                            GVariant   *value,
+                            gpointer    data)
+{
+  GimpImage   *image;
+  GimpDisplay *display;
+  return_if_no_image (image, data);
+  return_if_no_display (display, data);
+
+  if (tool_manager_undo_active (image->gimp, display) ||
+      gimp_image_undo (image))
+    {
+      gimp_image_flush (image);
+    }
+}
+
+edit_fontInc_cmd_callback (GimpAction *action,
+                          GVariant   *value,
+                          gpointer    data)
+{
+  GimpImage   *image;
+  GimpDisplay *display;
+  return_if_no_image (image, data);
+  return_if_no_display (display, data);
+
+  if (tool_manager_undo_active (image->gimp, display) ||
+      gimp_image_undo (image))
+    {
+      gimp_image_flush (image);
+    }
+}
+
+edit_fontDec_cmd_callback (GimpAction *action,
+                          GVariant   *value,
+                          gpointer    data)
+{
+  GimpImage   *image;
+  GimpDisplay *display;
+  return_if_no_image (image, data);
+  return_if_no_display (display, data);
+
+  if (tool_manager_undo_active (image->gimp, display) ||
+      gimp_image_undo (image))
+    {
+      gimp_image_flush (image);
+    }
+}
+
+void
 edit_undo_cmd_callback (GimpAction *action,
                         GVariant   *value,
                         gpointer    data)

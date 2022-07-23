@@ -162,8 +162,6 @@ static const guint8 *
 static GimpColorProfile *
                gimp_display_shell_get_color_profile(GimpColorManaged *managed);
 static void      gimp_display_shell_profile_changed(GimpColorManaged *managed);
-static void    gimp_display_shell_simulation_profile_changed
-                                                   (GimpColorManaged *managed);
 
 static void      gimp_display_shell_zoom_button_callback
                                                    (GimpDisplayShell *shell,
@@ -305,10 +303,9 @@ gimp_display_shell_class_init (GimpDisplayShellClass *klass)
 static void
 gimp_color_managed_iface_init (GimpColorManagedInterface *iface)
 {
-  iface->get_icc_profile            = gimp_display_shell_get_icc_profile;
-  iface->get_color_profile          = gimp_display_shell_get_color_profile;
-  iface->profile_changed            = gimp_display_shell_profile_changed;
-  iface->simulation_profile_changed = gimp_display_shell_simulation_profile_changed;
+  iface->get_icc_profile   = gimp_display_shell_get_icc_profile;
+  iface->get_color_profile = gimp_display_shell_get_color_profile;
+  iface->profile_changed   = gimp_display_shell_profile_changed;
 }
 
 static void
@@ -1088,15 +1085,6 @@ gimp_display_shell_profile_changed (GimpColorManaged *managed)
 }
 
 static void
-gimp_display_shell_simulation_profile_changed (GimpColorManaged *managed)
-{
-  GimpDisplayShell *shell = GIMP_DISPLAY_SHELL (managed);
-
-  gimp_display_shell_expose_full (shell);
-  gimp_display_shell_render_invalidate_full (shell);
-}
-
-static void
 gimp_display_shell_zoom_button_callback (GimpDisplayShell *shell,
                                          GtkWidget        *zoom_button)
 {
@@ -1368,7 +1356,6 @@ gimp_display_shell_reconnect (GimpDisplayShell *shell)
   g_signal_emit (shell, display_shell_signals[RECONNECT], 0);
 
   gimp_color_managed_profile_changed (GIMP_COLOR_MANAGED (shell));
-  gimp_display_shell_simulation_profile_changed (GIMP_COLOR_MANAGED (shell));
 
   gimp_display_shell_scroll_clamp_and_update (shell);
 

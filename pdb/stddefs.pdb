@@ -165,10 +165,6 @@ sub yosh_pdb_misc {
     contrib_pdb_misc('Manish Singh', '', @_);
 }
 
-sub alxsa_pdb_misc {
-    contrib_pdb_misc('Alex S.', '', @_);
-}
-
 sub std_pdb_deprecated {
     if (@_) {
         $blurb = $help = '';

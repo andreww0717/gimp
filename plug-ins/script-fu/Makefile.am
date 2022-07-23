@@ -36,7 +36,10 @@ AM_CPPFLAGS = \
 	$(GEGL_CFLAGS)		\
 	-I$(includedir)		\
 	-I$(srcdir)/libscriptfu \
-	-DG_LOG_DOMAIN=\"scriptfu\"
+	-DG_LOG_DOMAIN=\"scriptfu\"	\
+	-DSTANDALONE=0		\
+	-DUSE_INTERFACE=1	\
+	-DUSE_STRLWR=0
 
 AM_CFLAGS = \
 	$(xobjective_c)
@@ -49,12 +52,11 @@ AM_LDFLAGS = \
 	$(framework_cocoa)	\
 	$(xnone)
 
-SUBDIRS = libscriptfu scripts server interpreter
+SUBDIRS = libscriptfu scripts
 
-# Each plugin must be installed in a dir of the same name as the executable
-script_fudir = $(gimpplugindir)/plug-ins/script-fu
+libexecdir = $(gimpplugindir)/plug-ins/script-fu
 
-script_fu_PROGRAMS = script-fu
+libexec_PROGRAMS = script-fu
 
 script_fu_SOURCES = \
 	script-fu.c              \
@@ -64,10 +66,12 @@ script_fu_SOURCES = \
 	script-fu-eval.c         \
 	script-fu-eval.h         \
 	script-fu-text-console.h \
-	script-fu-text-console.c
-
+	script-fu-text-console.c \
+	script-fu-server.c       \
+	script-fu-server.h
 
 # link with libgimp-scriptfu and the usual gimp suspects
+# LibTool will add rpath to private shared libgimp-scriptfu in gimppluginsdir/lib
 script_fu_LDADD = \
 	$(libgimp_scriptfu)  \
 	$(libgimpui)		\
@@ -78,6 +82,8 @@ script_fu_LDADD = \
 	$(libgimpcolor)		\
 	$(libgimpbase)		\
 	$(GTK_LIBS)		\
+	$(SOCKET_LIBS)		\
+	$(WINSOCK_LIBS)		\
 	$(RT_LIBS)		\
 	$(INTLLIBS)		\
 	$(script_fu_RC)

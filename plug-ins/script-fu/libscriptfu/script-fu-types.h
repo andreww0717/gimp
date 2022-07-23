@@ -103,10 +103,5 @@ typedef struct
   SFArg        *args;
 } SFScript;
 
-typedef struct
-{
-  SFScript *script;   // script which defined this menu path and label
-  gchar    *menu_path;
-} SFMenu;
 
 #endif /*  __SCRIPT_FU_TYPES__  */
