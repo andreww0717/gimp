@@ -99,6 +99,7 @@ edit_bold_cmd_callback (GimpAction *action,
     }
 }
 
+void
 edit_italic_cmd_callback (GimpAction *action,
                          GVariant   *value,
                          gpointer    data)
@@ -115,6 +116,7 @@ edit_italic_cmd_callback (GimpAction *action,
     }
 }
 
+void
 edit_underline_cmd_callback (GimpAction *action,
                             GVariant   *value,
                             gpointer    data)
@@ -131,6 +133,7 @@ edit_underline_cmd_callback (GimpAction *action,
     }
 }
 
+void
 edit_fontInc_cmd_callback (GimpAction *action,
                           GVariant   *value,
                           gpointer    data)
@@ -147,6 +150,7 @@ edit_fontInc_cmd_callback (GimpAction *action,
     }
 }
 
+void
 edit_fontDec_cmd_callback (GimpAction *action,
                           GVariant   *value,
                           gpointer    data)

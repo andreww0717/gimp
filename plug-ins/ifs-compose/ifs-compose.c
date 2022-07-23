@@ -1078,23 +1078,23 @@ design_op_menu_create (GtkWidget *window)
       N_("_Delete"), "<primary>D", NULL,
       G_CALLBACK (ifs_compose_delete_callback) },
 
-      { "bold", GIMP_ICON_EDIT_BOLD,
+      { "bold", GIMP_ICON_FORMAT_TEXT_BOLD,
       N_("bold"), "<primary>B", NULL,
       G_CALLBACK (undo) },
 
-      { "italic", GIMP_ICON_EDIT_ITALIC,
+      { "italic", GIMP_ICON_FORMAT_TEXT_ITALIC,
       N_("italic"), "<primary>J", NULL,
       G_CALLBACK (undo) },
 
-      { "underline", GIMP_ICON_EDIT_UNDERLINE,
+      { "underline", GIMP_ICON_FORMAT_TEXT_UNDERLINE,
       N_("underline"), "<primary>U", NULL,
       G_CALLBACK (undo) },
 
-      { "fontInc", GIMP_ICON_EDIT_FONTINC,
+      { "fontInc", GIMP_ICON_FORMAT_TEXT_FONTINC,
       N_("fontInc"), "<primary>'", NULL,
       G_CALLBACK (undo) },
 
-      { "fontDec", GIMP_ICON_EDIT_fONTDEC,
+      { "fontDec", GIMP_ICON_FORMAT_TEXT_FONTDEC,
       N_("fontDec"), "<primary>/", NULL,
       G_CALLBACK (undo) },
 
@@ -1982,6 +1982,7 @@ fontDec (void)
 {
   
 }
+
 static void
 undo (void)
 {
